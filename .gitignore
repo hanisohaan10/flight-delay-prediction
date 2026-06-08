@@ -1,0 +1,16 @@
+# Data and model artifacts — never commit these
+data/
+models/
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# OS / editor noise
+.DS_Store
+.vscode/
+.idea/
