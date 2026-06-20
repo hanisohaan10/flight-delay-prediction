@@ -1,1 +1,17 @@
+# Core data
+pandas==2.2.2
+numpy==1.26.4
 
+# Parquet engine (you save/load .parquet)
+pyarrow==16.1.0
+
+# Visualization
+matplotlib==3.9.0
+seaborn==0.13.2
+
+# Notebook environment
+jupyterlab==4.2.5
+ipykernel==6.29.5
+
+# Resolve to project root
+pyprojroot==0.3.0
