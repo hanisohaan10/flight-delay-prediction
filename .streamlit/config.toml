@@ -1,0 +1,10 @@
+# Flight Delay Predictor — theme (cream + olive)
+[theme]
+primaryColor = "#586A2C"
+backgroundColor = "#F5F0DF"
+secondaryBackgroundColor = "#EAE3C9"
+textColor = "#33401A"
+font = "sans serif"
+
+[server]
+headless = true
