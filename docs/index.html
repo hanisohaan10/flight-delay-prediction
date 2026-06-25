@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tarmac — will your flight leave on time?</title>
+<meta name="description" content="Predict the chance a U.S. flight departs more than 15 minutes late, 2 hours before takeoff. Trained on 2.9M flights. Runs entirely in your browser.">
+<meta property="og:title" content="Tarmac — flight delay intelligence">
+<meta property="og:description" content="Know before you go. A machine-learning estimate of departure-delay risk, instantly, in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1 class="sr-only">Tarmac flight delay predictor</h1>
+
+<nav id="nav" class="on-hero">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top"><span class="dot">&#9992;</span> Tarmac</a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#data">The data</a>
+      <a href="#model">The model</a>
+      <a href="#try">Try it</a>
+      <button class="gbtn" id="gbtn" aria-label="Sign in with Google">
+        <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.2 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9.1h12.4c-.5 2.9-2.1 5.3-4.6 7l7.1 5.5C43.4 37.5 46.1 31.6 46.1 24.6z"/><path fill="#FBBC05" d="M10.4 28.3c-.5-1.4-.8-2.9-.8-4.3s.3-3 .8-4.3l-7.8-6.1C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.5l7.8-6.2z"/><path fill="#34A853" d="M24 48c6.2 0 11.5-2 15.3-5.5l-7.1-5.5c-2 1.3-4.6 2.1-8.2 2.1-6.3 0-11.7-3.7-13.6-9l-7.8 6.2C6.5 42.6 14.6 48 24 48z"/></svg>
+        Sign in
+      </button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <svg class="arcs" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="#C9A24B" stroke-width="1.2" opacity="0.55">
+      <path d="M-50 620 Q400 350 760 470 T1300 300"/>
+      <path d="M-50 720 Q500 520 900 560 T1300 460" opacity="0.5"/>
+      <path d="M100 800 Q450 480 820 600 T1300 540" opacity="0.35"/>
+    </g>
+    <g fill="#C9A24B" opacity="0.8">
+      <circle cx="760" cy="470" r="4"/><circle cx="-50" cy="620" r="4"/><circle cx="900" cy="560" r="3.4"/>
+    </g>
+    <g fill="#F5F0DF" opacity="0.16" font-size="34">
+      <text x="200" y="250">&#9992;</text><text x="980" y="220">&#9992;</text><text x="560" y="640">&#9992;</text>
+    </g>
+  </svg>
+  <div class="wrap hero-in reveal">
+    <div class="eyebrow" style="color:var(--gold)">Pre-departure &middot; 2-hour window</div>
+    <h1>Know before <span class="accent">you go.</span></h1>
+    <p class="lede">Tarmac estimates the chance your U.S. flight pushes back from the gate more than 15 minutes late — predicted two hours before departure, from the published schedule alone.</p>
+    <div class="cta">
+      <button class="btn btn-primary" onclick="document.getElementById('try').scrollIntoView()">Predict a flight &#8594;</button>
+      <a class="btn btn-ghost" href="#how">How it works</a>
+    </div>
+    <div class="hero-chips">
+      <div class="chip"><b id="c-flights">2.9M</b><span>flights trained on</span></div>
+      <div class="chip"><b>346</b><span>U.S. airports</span></div>
+      <div class="chip"><b>0.65</b><span>ROC-AUC</span></div>
+      <div class="chip"><b>0 servers</b><span>runs in your browser</span></div>
+    </div>
+  </div>
+  <div class="scroll-hint">scroll<span style="font-size:16px">&#8595;</span></div>
+</header>
+
+<section id="try">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Try it</div>
+      <h2>Check a flight in seconds</h2>
+      <p>Pick a real route. We look up the distance, pull each airport's and airline's history, and the model returns a probability — instantly, with the reasoning behind it.</p>
+    </div>
+    <div class="tool-grid">
+      <div class="card reveal">
+        <h3>Flight details</h3>
+        <div class="field"><label for="airline">Airline</label><select id="airline"></select></div>
+        <div class="two">
+          <div class="field"><label for="origin">From</label><select id="origin"></select></div>
+          <div class="field"><label for="dest">To</label><select id="dest"></select></div>
+        </div>
+        <div class="two">
+          <div class="field"><label for="dow">Day of week</label><select id="dow"></select></div>
+          <div class="field"><label for="hour">Departure time</label><select id="hour"></select></div>
+        </div>
+        <div class="dist" id="dist"></div>
+        <button class="btn btn-primary" id="predict" style="width:100%;justify-content:center">Predict delay risk</button>
+      </div>
+      <div class="result placeholder" id="result">
+        <div class="ph-ic">&#9992;</div>
+        <div>Fill in a flight and hit predict — your result appears here.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="alt">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">How it works</div>
+      <h2>No crystal ball — just disciplined data</h2>
+      <p>The hardest part of predicting delays isn't the model. It's using only what you'd actually know two hours before takeoff, and nothing that leaks from after the flight.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="n">1</div><h4>Schedule in</h4><p>Airline, route, day and departure hour — all known the moment a ticket is sold.</p></div>
+      <div class="step reveal"><div class="n">2</div><h4>History added</h4><p>Each airport and airline carries its historical on-time record, learned from the training period only.</p></div>
+      <div class="step reveal"><div class="n">3</div><h4>Model decides</h4><p>A gradient-boosted tree ensemble (XGBoost) weighs 6 signals across 700 trees.</p></div>
+      <div class="step reveal"><div class="n">4</div><h4>Probability out</h4><p>You get a calibrated risk — and a breakdown of what pushed it up or down.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="data">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">The data</div>
+      <h2>When flights actually run late</h2>
+      <p>Drawn from 2.9M U.S. Bureau of Transportation Statistics flights, Aug–Dec 2024. A few patterns the model leans on:</p>
+    </div>
+    <div class="stat-grid reveal">
+      <div class="stat"><b id="s-base">18%</b><span>of flights leave 15+ min late</span></div>
+      <div class="stat"><b id="s-peak">27%</b><span>peak risk, evening departures</span></div>
+      <div class="stat"><b>4&#215;</b><span>worst vs best airport gap</span></div>
+      <div class="stat"><b>2.9M</b><span>flights analysed</span></div>
+    </div>
+    <div class="chart-card reveal">
+      <h4>Delay risk by departure hour</h4>
+      <div class="sub">Probability of a 15-minute departure delay rises steadily through the day, peaking around 8&nbsp;PM.</div>
+      <div class="chart-box"><canvas id="hourChart"></canvas></div>
+    </div>
+    <div class="rank">
+      <div class="rank-card reveal"><h5>Most delay-prone airports</h5><div id="worst"></div></div>
+      <div class="rank-card reveal"><h5>Calmest airports</h5><div id="best"></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="model" class="dark">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow" style="color:var(--gold)">The model</div>
+      <h2>Honest about what it can and can't do</h2>
+      <p>Predicting delays from schedule data alone is genuinely hard. Here's the real performance — no inflated numbers.</p>
+    </div>
+    <div class="metrics reveal">
+      <div class="metric"><b>0.65</b><div class="t">ROC-AUC</div><p>Ranks a random delayed flight above an on-time one 65% of the time.</p></div>
+      <div class="metric"><b>0.33</b><div class="t">PR-AUC</div><p>Real lift over the 18% base rate at finding the minority — delayed — flights.</p></div>
+      <div class="metric"><b>6</b><div class="t">signals, 0 leaks</div><p>Only pre-departure features. Nothing from during or after the flight.</p></div>
+    </div>
+    <p class="note">This is a screening signal, not a guarantee. Most flights leave on time, so treat the output as "how far above or below average is this flight's risk" — not a verdict. A high reading means watch the gate, not cancel your plans.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="f-in">
+      <div class="brand" style="color:#fff"><span class="dot">&#9992;</span> Tarmac</div>
+      <div>Data: <a href="https://www.transtats.bts.gov/" target="_blank" rel="noopener">U.S. BTS On-Time Performance</a> &nbsp;&middot;&nbsp; Model: XGBoost, runs client-side</div>
+    </div>
+    <div class="disc">Predicts departure delay (&gt;15 min), not arrival delay or cancellation. Built for education and demonstration; not affiliated with any airline or the BTS. No data leaves your device — the model runs entirely in your browser.</div>
+  </div>
+</footer>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3>Sign-in is wired and ready</h3>
+    <p>Tarmac uses Google Identity Services. To switch it on, drop your Google OAuth <b>client ID</b> into <code>CONFIG.googleClientId</code> in <code>app.js</code>, and add your site's address as an authorised origin in the Google Cloud console.</p>
+    <p>Everything here works without signing in — the predictor is open to anyone.</p>
+    <div class="x"><button class="btn btn-primary" onclick="document.getElementById('modal').classList.remove('open')">Got it</button></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
