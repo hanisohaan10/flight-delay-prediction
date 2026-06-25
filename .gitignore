@@ -1,4 +1,4 @@
-# Data and model artifacts — never commit these
+# Data and model artifacts — never commit these(unnecessary)
 data/
 models/
 
@@ -8,7 +8,13 @@ __pycache__/
 .ipynb_checkpoints/
 .venv/
 venv/
-env/
+env/    
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Logs
+*.log
 
 # OS / editor noise
 .DS_Store

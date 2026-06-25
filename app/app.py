@@ -51,7 +51,6 @@ BANDS = [
     (1.01, "High",     "#9E4324", "Well above the average flight."),
 ]
 
-
 @st.cache_resource
 def load_model():
     model = xgb.XGBClassifier()
